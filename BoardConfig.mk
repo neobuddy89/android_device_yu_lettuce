@@ -41,6 +41,9 @@ BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/cmhw/src
 # CPU
 TARGET_CPU_CORTEX_A53 := true
 
+# Compression - Smoosh all the things
+TARGET_TRANSPARENT_COMPRESSION_METHOD := lz4
+
 # GPS
 TARGET_GPS_HAL_PATH := $(DEVICE_PATH)/gps
 TARGET_NO_RPC := true
