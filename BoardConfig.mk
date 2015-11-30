@@ -26,6 +26,10 @@ else
 TARGET_KERNEL_CONFIG := cyanogenmod_lettuce_defconfig
 endif
 
+# Audio
+USE_CUSTOM_AUDIO_POLICY := 1
+
+# Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 
 # Camera
