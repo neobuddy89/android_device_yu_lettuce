@@ -30,7 +30,9 @@
 #ifndef __QCAMERA_QUEUE_H__
 #define __QCAMERA_QUEUE_H__
 
+#include <malloc.h>
 #include <pthread.h>
+#include <string.h>
 #include "cam_list.h"
 
 namespace qcamera {

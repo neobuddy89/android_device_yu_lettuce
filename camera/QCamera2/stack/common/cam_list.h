@@ -33,10 +33,13 @@
 #ifndef __CAMLIST_H
 #define __CAMLIST_H
 
+#include <malloc.h>
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define member_of(ptr, type, member) ({ \
-  const typeof(((type *)0)->member) *__mptr = (ptr); \
+  const __typeof__(((type *)0)->member) *__mptr = (ptr); \
   (type *)((char *)__mptr - offsetof(type,member));})
 
 struct cam_list {
