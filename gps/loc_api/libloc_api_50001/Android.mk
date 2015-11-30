@@ -5,6 +5,8 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+LOCAL_CLANG_CFLAGS += -Wno-unused-parameter -Wno-unused-parameter
+
 LOCAL_MODULE := libloc_eng
 LOCAL_MODULE_OWNER := qcom
 
