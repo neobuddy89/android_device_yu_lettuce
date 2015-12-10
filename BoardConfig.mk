@@ -79,6 +79,9 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 13042155008
 # Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 
+# Set vold to use native exfat driver
+TARGET_KERNEL_HAVE_EXFAT := true
+
 BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
 TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
