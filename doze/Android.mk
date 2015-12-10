@@ -11,6 +11,9 @@ LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
+LOCAL_STATIC_JAVA_LIBRARIES := \
+    org.cyanogenmod.platform.internal
+
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
