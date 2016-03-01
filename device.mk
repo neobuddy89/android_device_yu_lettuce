@@ -71,7 +71,7 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 
 # libhealthd library as the supplement of off-mode charging
 PRODUCT_PACKAGES += \
-    libhealthd.msm
+    libhealthd.lettuce
 
 # Doze mode
 PRODUCT_PACKAGES += \
