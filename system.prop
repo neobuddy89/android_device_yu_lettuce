@@ -32,3 +32,6 @@ persist.camera.pip.support=0
 
 # Disable CPP duplication mode
 persist.camera.cpp.duplication=false
+
+# Disable all debug logging 
+persist.camera.hal.debug.mask=0
