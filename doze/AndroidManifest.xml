@@ -15,7 +15,7 @@
         android:targetSdkVersion="21"/>
 
     <application
-        android:label="YUDoze"
+        android:label="@*cyanogenmod.platform:string/device_settings_app_name"
         android:persistent="true">
 
         <receiver android:name="com.cyanogenmod.settings.device.BootCompletedReceiver">
@@ -31,14 +31,14 @@
 
         <activity
             android:name=".TouchscreenGestureSettings"
-            android:label="@string/screen_gestures_panel_title"
-            android:theme="@android:style/Theme.Material.Settings">>
+            android:label="@*cyanogenmod.platform:string/screen_gestures_panel_title"
+            android:theme="@android:style/Theme.Material.Settings">
             <intent-filter>
                 <action android:name="com.cyanogenmod.action.LAUNCH_TOUCHSCREEN_GESTURE_SETTINGS" />
             </intent-filter>
             <meta-data
                 android:name="com.android.settings.title"
-                android:resource="@string/screen_gestures_panel_title"/>
+                android:resource="@*cyanogenmod.platform:string/screen_gestures_panel_title"/>
         </activity>
 
     </application>
