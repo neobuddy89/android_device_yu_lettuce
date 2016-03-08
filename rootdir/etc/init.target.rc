@@ -25,8 +25,6 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import init.lettuce.diag.rc
-
 on boot
     # Touchscreen
     chown root system /sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/gesture
@@ -39,3 +37,29 @@ on boot
     chmod 0644 /sys/devices/virtual/timed_output/vibrator/vtg_level
     chmod 0644 /sys/devices/virtual/timed_output/vibrator/vtg_max
     chmod 0644 /sys/devices/virtual/timed_output/vibrator/vtg_min
+
+    # Adaptive LMK
+    write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
+    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 81250
+
+on charger
+   write /sys/module/lpm_levels/system/cpu0/wfi/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu1/wfi/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu2/wfi/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu3/wfi/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu0/standalone_pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu1/standalone_pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu2/standalone_pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu3/standalone_pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu0/pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu1/pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu2/pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu3/pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/cpu0/pc/suspend_enabled N
+   write /sys/module/lpm_levels/system/cpu1/pc/suspend_enabled Y
+   write /sys/module/lpm_levels/system/cpu2/pc/suspend_enabled Y
+   write /sys/module/lpm_levels/system/cpu3/pc/suspend_enabled Y
+   write /sys/module/lpm_levels/system/l2-pc/idle_enabled Y
+   write /sys/module/lpm_levels/system/l2-cache-active/idle_enabled Y
+   write /sys/module/lpm_levels/system/l2-pc/suspend_enabled Y
+   write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ondemand
