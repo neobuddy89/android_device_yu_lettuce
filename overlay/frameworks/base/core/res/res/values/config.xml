@@ -172,4 +172,7 @@
 
     <!-- Radio Access Family -->
     <string name="config_radio_access_family">GPRS|EDGE|UMTS|HSDPA|HSUPA|HSPA|LTE|HSPAP|GSM|TD_SCDMA|WCDMA|LTE_CA</string>
+
+    <bool name="config_eap_sim_based_auth_supported">true</bool>
+
 </resources>
