@@ -1,0 +1,1 @@
+allow untrusted_app tombstone_data_file:dir { getattr search };
