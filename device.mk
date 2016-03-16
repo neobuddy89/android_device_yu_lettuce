@@ -109,6 +109,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_EXTRA_RECOVERY_KEYS += \
     $(LOCAL_PATH)/lettuce-releasekey
 
+# Temasek ROM specific
+TARGET_SCREEN_ASPECT_RATIO := 16by9
+SCREEN_RATIO_PROPORTIONATE := true
+
 # Thermals
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal_engine.conf:system/etc/thermal-engine.conf
