@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The CyanogenMod Project
+ * Copyright (c) 2016 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,30 +28,30 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.UserHandle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import java.lang.System;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.List;
 
 public class YUDozeService extends Service {
     private static final String TAG = "YUDozeService";
     private static final boolean DEBUG = false;
 
-    private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
-
     private static final String GESTURE_HAND_WAVE_KEY = "gesture_hand_wave";
     private static final String GESTURE_POCKET_KEY = "gesture_pocket";
     private static final String PROXIMITY_WAKE_KEY = "proximity_wake_enable";
+
+    private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
 
     private static final int POCKET_DELTA_NS = 1000 * 1000 * 1000;
 
     private Context mContext;
     private YUProximitySensor mSensor;
     private PowerManager mPowerManager;
+    private PowerManager.WakeLock mWakeLock;
 
     private boolean mHandwaveGestureEnabled = false;
     private boolean mPocketGestureEnabled = false;
@@ -103,11 +103,8 @@ public class YUDozeService extends Service {
             return false;
         }
 
-        public void testAndEnable() {
-            if ((isDozeEnabled() && (mHandwaveGestureEnabled || mPocketGestureEnabled)) ||
-                    mProximityWakeEnabled) {
-                mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            }
+        public void enable() {
+            mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
         public void disable() {
@@ -121,11 +118,12 @@ public class YUDozeService extends Service {
         mContext = this;
         mPowerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
         mSensor = new YUProximitySensor(mContext);
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "YuDozeWakeLock");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         loadPreferences(sharedPrefs);
         sharedPrefs.registerOnSharedPreferenceChangeListener(mPrefListener);
-        if (!isInteractive()) {
-            mSensor.testAndEnable();
+        if (!isInteractive() && areGesturesEnabled()) {
+            mSensor.enable();
         }
     }
 
@@ -144,26 +142,37 @@ public class YUDozeService extends Service {
     }
 
     private void launchDozePulse() {
-        mContext.sendBroadcast(new Intent(DOZE_INTENT));
+        mContext.sendBroadcastAsUser(new Intent(DOZE_INTENT), UserHandle.ALL);
     }
 
     private boolean isInteractive() {
         return mPowerManager.isInteractive();
     }
 
-    private boolean isDozeEnabled() {
-        return Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.DOZE_ENABLED, 1) != 0;
+    private boolean areGesturesEnabled() {
+        return mProximityWakeEnabled || ((mHandwaveGestureEnabled || mPocketGestureEnabled) &&
+                Settings.Secure.getInt(mContext.getContentResolver(),
+                        Settings.Secure.DOZE_ENABLED, 1) != 0);
     }
 
     private void onDisplayOn() {
         if (DEBUG) Log.d(TAG, "Display on");
         mSensor.disable();
+        if (areGesturesEnabled() && !mWakeLock.isHeld()) {
+            if (DEBUG) Log.d(TAG, "Acquiring wakelock");
+            mWakeLock.acquire();
+        }
     }
 
     private void onDisplayOff() {
         if (DEBUG) Log.d(TAG, "Display off");
-        mSensor.testAndEnable();
+        if (areGesturesEnabled()) {
+            mSensor.enable();
+        }
+        if (mWakeLock.isHeld()) {
+            if (DEBUG) Log.d(TAG, "Releasing wakelock");
+            mWakeLock.release();
+        }
     }
 
     private void loadPreferences(SharedPreferences sharedPreferences) {
@@ -193,6 +202,11 @@ public class YUDozeService extends Service {
                 mPocketGestureEnabled = sharedPreferences.getBoolean(GESTURE_POCKET_KEY, false);
             } else if (PROXIMITY_WAKE_KEY.equals(key)) {
                 mProximityWakeEnabled = sharedPreferences.getBoolean(PROXIMITY_WAKE_KEY, false);
+            }
+
+            if (areGesturesEnabled() && !mWakeLock.isHeld()) {
+                if (DEBUG) Log.d(TAG, "Acquiring wakelock");
+                mWakeLock.acquire();
             }
         }
     };
