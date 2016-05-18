@@ -16,6 +16,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Gesture shortcuts -->
+    <string name="touchscreen_gesture_title">Touchscreen gestures</string>
     <string name="touchscreen_camera_gesture_title">Camera</string>
     <string name="touchscreen_camera_gesture_summary">Draw a \'C\' to activate camera</string>
     <string name="touchscreen_flashlight_gesture_title">Flashlight</string>
@@ -25,4 +26,14 @@
     • Swipe down to play/pause\n
     • Swipe left for previous track\n
     • Swipe right for next track</string>
+    <string name="ambient_display_title">Ambient display</string>
+    <string name="ambient_display_enable_title">Ambient display</string>
+    <string name="ambient_display_enable_summary">Wake screen when you receive notifications</string>
+    <string name="hand_wave_gesture_title">Hand wave</string>
+    <string name="hand_wave_gesture_summary">Pulse notifications on hand wave</string>
+    <string name="pocket_gesture_title">Pocket</string>
+    <string name="pocket_gesture_summary">Pulse notifications on removal from pocket</string>
+    <string name="proximity_wake_title">Proximity wake</string>
+    <string name="proximity_wake_enable_title">Proximity wake</string>
+    <string name="proximity_wake_enable_summary">Wake device on hand wave</string>
 </resources>
