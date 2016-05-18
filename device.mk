@@ -71,6 +71,11 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 PRODUCT_PACKAGES += \
     Gello
 
+# Gestures
+PRODUCT_PACKAGES += \
+    CMActions \
+    com.cyanogenmod.keyhandler
+
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8916
