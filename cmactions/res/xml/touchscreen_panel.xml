@@ -34,6 +34,16 @@
             android:key="touchscreen_gesture_flashlight"
             android:title="@string/touchscreen_flashlight_gesture_title"
             android:summary="@string/touchscreen_flashlight_gesture_summary" />
+
+        <SwitchPreference
+            android:key="touchscreen_gesture_message"
+            android:title="@string/touchscreen_message_gesture_title"
+            android:summary="@string/touchscreen_message_gesture_summary" />
+
+        <SwitchPreference
+            android:key="touchscreen_gesture_email"
+            android:title="@string/touchscreen_email_gesture_title"
+            android:summary="@string/touchscreen_email_gesture_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory

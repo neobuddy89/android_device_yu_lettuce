@@ -17,8 +17,11 @@
 package com.cyanogenmod.settings.device;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -33,7 +36,10 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.os.Vibrator;
+import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -53,8 +59,12 @@ public class KeyHandler implements DeviceKeyHandler {
     private static final int GESTURE_SLIDE_RIGHT_SCANCODE = 251;
     private static final int GESTURE_SLIDE_C_SCANCODE = 252;
     private static final int GESTURE_SLIDE_O_SCANCODE = 253;
+    private static final int GESTURE_SLIDE_M_SCANCODE = 254;
+    private static final int GESTURE_SLIDE_E_SCANCODE = 256;
 
     private static final int GESTURE_WAKELOCK_DURATION = 3000;
+
+    public static final String SMS_DEFAULT_APPLICATION = "sms_default_application";
 
     private static final int[] sSupportedGestures = new int[] {
         GESTURE_SLIDE_DOWN_SCANCODE,
@@ -62,6 +72,8 @@ public class KeyHandler implements DeviceKeyHandler {
         GESTURE_SLIDE_RIGHT_SCANCODE,
         GESTURE_SLIDE_C_SCANCODE,
         GESTURE_SLIDE_O_SCANCODE,
+        GESTURE_SLIDE_M_SCANCODE,
+        GESTURE_SLIDE_E_SCANCODE,
     };
 
     private final Context mContext;
@@ -102,51 +114,44 @@ public class KeyHandler implements DeviceKeyHandler {
         if (mVibrator == null || !mVibrator.hasVibrator()) {
             mVibrator = null;
         }
-    }
 
-    private void ensureCameraManager() {
-        if (mCameraManager != null) {
-            return;
-        }
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-
-        // Get first rear camera id
-        try {
-            for (final String cameraId : mCameraManager.getCameraIdList()) {
-                CameraCharacteristics characteristics =
-                        mCameraManager.getCameraCharacteristics(cameraId);
-                int cOrientation = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (cOrientation == CameraCharacteristics.LENS_FACING_BACK) {
-                    mRearCameraId = cameraId;
-                    break;
-                }
-            }
-        } catch (CameraAccessException e) {
-            // Ignore
-        }
-        if (mRearCameraId == null) {
-            Log.e(TAG, "Cannot find rear camera for torch usage");
-        } else {
-            mCameraManager.registerTorchCallback(new MyTorchCallback(), mEventHandler);
-        }
+        mCameraManager.registerTorchCallback(new MyTorchCallback(), mEventHandler);
     }
 
     private class MyTorchCallback extends CameraManager.TorchCallback {
         @Override
         public void onTorchModeChanged(String cameraId, boolean enabled) {
-            if (!cameraId.equals(mRearCameraId)) {
+            if (!cameraId.equals(mRearCameraId))
                 return;
-            }
             mTorchEnabled = enabled;
         }
 
         @Override
         public void onTorchModeUnavailable(String cameraId) {
-            if (!cameraId.equals(mRearCameraId)) {
+            if (!cameraId.equals(mRearCameraId))
                 return;
-            }
             mTorchEnabled = false;
         }
+    }
+
+    private String getRearCameraId() {
+        if (mRearCameraId == null) {
+            try {
+                for (final String cameraId : mCameraManager.getCameraIdList()) {
+                    CameraCharacteristics characteristics =
+                            mCameraManager.getCameraCharacteristics(cameraId);
+                    int cOrientation = characteristics.get(CameraCharacteristics.LENS_FACING);
+                    if (cOrientation == CameraCharacteristics.LENS_FACING_BACK) {
+                        mRearCameraId = cameraId;
+                        break;
+                    }
+                }
+            } catch (CameraAccessException e) {
+                // Ignore
+            }
+        }
+        return mRearCameraId;
     }
 
     private class EventHandler extends Handler {
@@ -154,37 +159,64 @@ public class KeyHandler implements DeviceKeyHandler {
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
             case GESTURE_SLIDE_DOWN_SCANCODE:
-                doHapticFeedback();
                 dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-                break;
-            case GESTURE_SLIDE_LEFT_SCANCODE:
                 doHapticFeedback();
-                dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
                 break;
-            case GESTURE_SLIDE_RIGHT_SCANCODE:
-                doHapticFeedback();
-                dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_NEXT);
-                break;
-            case GESTURE_SLIDE_C_SCANCODE:
-                doHapticFeedback();
-                mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
 
-                Intent intent = new Intent(cyanogenmod.content.Intent.ACTION_SCREEN_CAMERA_GESTURE);
-                mContext.sendBroadcast(intent, Manifest.permission.STATUS_BAR_SERVICE);
-                break;
-            case GESTURE_SLIDE_O_SCANCODE:
+            case GESTURE_SLIDE_LEFT_SCANCODE:
+                dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
                 doHapticFeedback();
-                ensureCameraManager();
-                if (mRearCameraId != null) {
-                    mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
-                    try {
-                        mCameraManager.setTorchMode(mRearCameraId, !mTorchEnabled);
-                        mTorchEnabled = !mTorchEnabled;
-                    } catch (CameraAccessException e) {
-                        Log.e(TAG, "setTorchMode " + mTorchEnabled + " failed: " + e);
-                    }
+                break;
+
+            case GESTURE_SLIDE_RIGHT_SCANCODE:
+                dispatchMediaKeyWithWakeLockToMediaSession(KeyEvent.KEYCODE_MEDIA_NEXT);
+                doHapticFeedback();
+                break;
+
+            case GESTURE_SLIDE_C_SCANCODE:
+                mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                Intent c_intent = new Intent(cyanogenmod.content.Intent.ACTION_SCREEN_CAMERA_GESTURE);
+                mContext.sendBroadcast(c_intent, Manifest.permission.STATUS_BAR_SERVICE);
+                doHapticFeedback();
+                break;
+
+            case GESTURE_SLIDE_E_SCANCODE:
+                mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                mPowerManager.wakeUp(SystemClock.uptimeMillis(), "wakeup-gesture");
+                Intent e_intent = new Intent(Intent.ACTION_MAIN, null);
+                e_intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                startActivitySafely(e_intent);
+                doHapticFeedback();
+                break;
+
+            case GESTURE_SLIDE_M_SCANCODE:
+
+                mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                mPowerManager.wakeUp(SystemClock.uptimeMillis(), "wakeup-gesture");
+                String defaultApplication = Settings.Secure.getString(mContext.getContentResolver(),
+                    SMS_DEFAULT_APPLICATION);
+                PackageManager pm = mContext.getPackageManager();
+                Intent s_intent = pm.getLaunchIntentForPackage(defaultApplication );
+                if (s_intent != null) {
+                    startActivitySafely(s_intent);
+                    doHapticFeedback();
                 }
                 break;
+
+            case GESTURE_SLIDE_O_SCANCODE: {
+                String rearCameraId = getRearCameraId();
+                if (rearCameraId != null) {
+                    mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                    try {
+                        mCameraManager.setTorchMode(rearCameraId, !mTorchEnabled);
+                        mTorchEnabled = !mTorchEnabled;
+                    } catch (CameraAccessException e) {
+                        // Ignore
+                    }
+                    doHapticFeedback();
+                }
+                break;
+            }
             }
         }
     }
@@ -213,7 +245,6 @@ public class KeyHandler implements DeviceKeyHandler {
                 mEventHandler.sendMessage(msg);
             }
         }
-
         return true;
     }
 
@@ -231,7 +262,7 @@ public class KeyHandler implements DeviceKeyHandler {
                 mProximityWakeLock.release();
                 mSensorManager.unregisterListener(this);
                 if (!mEventHandler.hasMessages(GESTURE_REQUEST)) {
-                    // The sensor took too long, ignoring.
+                    // The sensor took to long, ignoring.
                     return;
                 }
                 mEventHandler.removeMessages(GESTURE_REQUEST);
@@ -257,6 +288,19 @@ public class KeyHandler implements DeviceKeyHandler {
             helper.sendMediaButtonEvent(event, true);
         } else {
             Log.w(TAG, "Unable to send media key event");
+        }
+    }
+
+    private void startActivitySafely(Intent intent) {
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        try {
+            UserHandle user = new UserHandle(UserHandle.USER_CURRENT);
+            mContext.startActivityAsUser(intent, null, user);
+        } catch (ActivityNotFoundException e) {
+            // Ignore
         }
     }
 
