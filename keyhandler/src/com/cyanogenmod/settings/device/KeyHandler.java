@@ -17,6 +17,8 @@
 package com.cyanogenmod.settings.device;
 
 import android.Manifest;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -78,6 +80,8 @@ public class KeyHandler implements DeviceKeyHandler {
 
     private final Context mContext;
     private final PowerManager mPowerManager;
+    private KeyguardManager mKeyguardManager;
+    KeyguardLock mKeyguardLock;
     private EventHandler mEventHandler;
     private SensorManager mSensorManager;
     private CameraManager mCameraManager;
@@ -154,6 +158,16 @@ public class KeyHandler implements DeviceKeyHandler {
         return mRearCameraId;
     }
 
+    private void ensureKeyguardManager() {
+        if (mKeyguardManager == null) {
+            mKeyguardManager =
+                    (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+        }
+        if (mKeyguardLock == null) {
+            mKeyguardLock = mKeyguardManager.newKeyguardLock(Context.KEYGUARD_SERVICE);
+        }
+    }
+
     private class EventHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -181,7 +195,11 @@ public class KeyHandler implements DeviceKeyHandler {
                 break;
 
             case GESTURE_SLIDE_E_SCANCODE:
+                ensureKeyguardManager();
                 mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                if (!mKeyguardManager.isKeyguardSecure()) {
+                    mKeyguardLock.disableKeyguard();
+                }
                 mPowerManager.wakeUp(SystemClock.uptimeMillis(), "wakeup-gesture");
                 Intent e_intent = new Intent(Intent.ACTION_MAIN, null);
                 e_intent.addCategory(Intent.CATEGORY_APP_EMAIL);
@@ -190,13 +208,16 @@ public class KeyHandler implements DeviceKeyHandler {
                 break;
 
             case GESTURE_SLIDE_M_SCANCODE:
-
+                ensureKeyguardManager();
                 mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+                if (!mKeyguardManager.isKeyguardSecure()) {
+                    mKeyguardLock.disableKeyguard();
+                }
                 mPowerManager.wakeUp(SystemClock.uptimeMillis(), "wakeup-gesture");
                 String defaultApplication = Settings.Secure.getString(mContext.getContentResolver(),
                     SMS_DEFAULT_APPLICATION);
                 PackageManager pm = mContext.getPackageManager();
-                Intent s_intent = pm.getLaunchIntentForPackage(defaultApplication );
+                Intent s_intent = pm.getLaunchIntentForPackage(defaultApplication);
                 if (s_intent != null) {
                     startActivitySafely(s_intent);
                     doHapticFeedback();
@@ -298,6 +319,9 @@ public class KeyHandler implements DeviceKeyHandler {
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         try {
             UserHandle user = new UserHandle(UserHandle.USER_CURRENT);
+            if (!mKeyguardManager.isKeyguardSecure()) {
+                mKeyguardLock.disableKeyguard();
+            }
             mContext.startActivityAsUser(intent, null, user);
         } catch (ActivityNotFoundException e) {
             // Ignore
