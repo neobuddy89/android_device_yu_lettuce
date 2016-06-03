@@ -44,6 +44,35 @@
             android:key="touchscreen_gesture_email"
             android:title="@string/touchscreen_email_gesture_title"
             android:summary="@string/touchscreen_email_gesture_summary" />
+
+        <SwitchPreference
+            android:key="touchscreen_gesture_custom"
+            android:title="@string/touchscreen_custom_gesture_title"
+            android:summary="@string/touchscreen_custom_gesture_summary" />
+
+        <ListPreference
+            android:key="touchscreen_gesture_w_intent"
+            android:title="@string/touchscreen_w_gesture_title"
+            android:summary="@string/touchscreen_w_gesture_summary"
+            android:enabled="false" />
+
+        <ListPreference
+            android:key="touchscreen_gesture_z_intent"
+            android:title="@string/touchscreen_z_gesture_title"
+            android:summary="@string/touchscreen_z_gesture_summary"
+            android:enabled="false" />
+
+        <ListPreference
+            android:key="touchscreen_gesture_v_intent"
+            android:title="@string/touchscreen_v_gesture_title"
+            android:summary="@string/touchscreen_v_gesture_summary"
+            android:enabled="false" />
+
+        <ListPreference
+            android:key="touchscreen_gesture_s_intent"
+            android:title="@string/touchscreen_s_gesture_title"
+            android:summary="@string/touchscreen_s_gesture_summary"
+            android:enabled="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -45,6 +45,8 @@ import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import java.net.URISyntaxException;
+
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.util.ArrayUtils;
 
@@ -63,10 +65,19 @@ public class KeyHandler implements DeviceKeyHandler {
     private static final int GESTURE_SLIDE_O_SCANCODE = 253;
     private static final int GESTURE_SLIDE_M_SCANCODE = 254;
     private static final int GESTURE_SLIDE_E_SCANCODE = 256;
+    private static final int GESTURE_SLIDE_W_SCANCODE = 257;
+    private static final int GESTURE_SLIDE_Z_SCANCODE = 258;
+    private static final int GESTURE_SLIDE_V_SCANCODE = 259;
+    private static final int GESTURE_SLIDE_S_SCANCODE = 260;
 
     private static final int GESTURE_WAKELOCK_DURATION = 3000;
 
     public static final String SMS_DEFAULT_APPLICATION = "sms_default_application";
+
+    private static final String KEY_W_INTENT = "touchscreen_gesture_w_intent";
+    private static final String KEY_Z_INTENT = "touchscreen_gesture_z_intent";
+    private static final String KEY_V_INTENT = "touchscreen_gesture_v_intent";
+    private static final String KEY_S_INTENT = "touchscreen_gesture_s_intent";
 
     private static final int[] sSupportedGestures = new int[] {
         GESTURE_SLIDE_DOWN_SCANCODE,
@@ -76,6 +87,10 @@ public class KeyHandler implements DeviceKeyHandler {
         GESTURE_SLIDE_O_SCANCODE,
         GESTURE_SLIDE_M_SCANCODE,
         GESTURE_SLIDE_E_SCANCODE,
+        GESTURE_SLIDE_W_SCANCODE,
+        GESTURE_SLIDE_Z_SCANCODE,
+        GESTURE_SLIDE_V_SCANCODE,
+        GESTURE_SLIDE_S_SCANCODE,
     };
 
     private final Context mContext;
@@ -224,7 +239,7 @@ public class KeyHandler implements DeviceKeyHandler {
                 }
                 break;
 
-            case GESTURE_SLIDE_O_SCANCODE: {
+            case GESTURE_SLIDE_O_SCANCODE:
                 String rearCameraId = getRearCameraId();
                 if (rearCameraId != null) {
                     mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
@@ -237,9 +252,63 @@ public class KeyHandler implements DeviceKeyHandler {
                     doHapticFeedback();
                 }
                 break;
-            }
+
+            case GESTURE_SLIDE_W_SCANCODE:
+                launchIntentFromKey(KEY_W_INTENT);
+                break;
+
+            case GESTURE_SLIDE_Z_SCANCODE:
+                launchIntentFromKey(KEY_Z_INTENT);
+                break;
+
+            case GESTURE_SLIDE_V_SCANCODE:
+                launchIntentFromKey(KEY_V_INTENT);
+                break;
+
+            case GESTURE_SLIDE_S_SCANCODE:
+                launchIntentFromKey(KEY_S_INTENT);
+                break;
             }
         }
+    }
+
+    private void launchIntentFromKey(String key) {
+        String packageName = Settings.System.getString(mContext.getContentResolver(), key);
+        ensureKeyguardManager();
+        mGestureWakeLock.acquire(GESTURE_WAKELOCK_DURATION);
+        mPowerManager.wakeUp(SystemClock.uptimeMillis(), "wakeup-gesture");
+
+        if (packageName == null || packageName.equals("") || packageName.equals("default")) {
+            return;
+        }
+
+        Intent intent = null;
+
+        if (packageName.startsWith("intent:")) {
+            Log.e("KeyHandler", "packageName.equals(shortcut)");
+            try {
+                Log.e("KeyHandler", "Try shortcut");
+                intent = Intent.parseUri(packageName, Intent.URI_INTENT_SCHEME);
+            } catch (URISyntaxException e) {
+                Log.e("KeyHandler", "Shortcut failed");
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            Log.e("KeyHandler", "NOT packageName.equals(shortcut)");
+            intent = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
+        }
+
+        if (intent != null) {
+            if (!mKeyguardManager.isKeyguardSecure()) {
+                mKeyguardLock.disableKeyguard();
+            }
+            startActivitySafely(intent);
+            doHapticFeedback();
+            return;
+        }
+
+        return;
     }
 
     public boolean handleKeyEvent(KeyEvent event) {
@@ -283,7 +352,7 @@ public class KeyHandler implements DeviceKeyHandler {
                 mProximityWakeLock.release();
                 mSensorManager.unregisterListener(this);
                 if (!mEventHandler.hasMessages(GESTURE_REQUEST)) {
-                    // The sensor took to long, ignoring.
+                    // The sensor took too long, ignoring.
                     return;
                 }
                 mEventHandler.removeMessages(GESTURE_REQUEST);
@@ -319,6 +388,7 @@ public class KeyHandler implements DeviceKeyHandler {
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         try {
             UserHandle user = new UserHandle(UserHandle.USER_CURRENT);
+            // Check again to ensure we dismiss keyguard
             if (!mKeyguardManager.isKeyguardSecure()) {
                 mKeyguardLock.disableKeyguard();
             }

@@ -37,6 +37,7 @@ public class CMActionsSettings {
             "touchscreen_gesture_flashlight";
     private static final String TOUCHSCREEN_MSG_GESTURE_KEY = "touchscreen_gesture_message";
     private static final String TOUCHSCREEN_EMAIL_GESTURE_KEY = "touchscreen_gesture_email";
+    private static final String TOUCHSCREEN_CUSTOM_GESTURE_KEY = "touchscreen_gesture_custom";
 
     // Proc nodes
     public static final String TOUCHSCREEN_CAMERA_NODE =
@@ -49,6 +50,14 @@ public class CMActionsSettings {
             "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/message_enable";
     public static final String TOUCHSCREEN_EMAIL_NODE =
             "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/email_enable";
+    public static final String TOUCHSCREEN_W_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_w_enable";
+    public static final String TOUCHSCREEN_Z_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_z_enable";
+    public static final String TOUCHSCREEN_V_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_v_enable";
+    public static final String TOUCHSCREEN_S_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_s_enable";
 
     // Key Masks
     private boolean mIsGesture_CAM_Enabled;
@@ -56,6 +65,7 @@ public class CMActionsSettings {
     private boolean mIsGesture_FLA_Enabled;
     private boolean mIsGesture_MSG_Enabled;
     private boolean mIsGesture_EML_Enabled;
+    private boolean mIsGesture_CUS_Enabled;
 
     private final Context mContext;
 
@@ -77,6 +87,11 @@ public class CMActionsSettings {
         FileUtils.writeLine(TOUCHSCREEN_MESSAGE_NODE, mIsGesture_MSG_Enabled ? "1" : "0");
         mIsGesture_EML_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_EMAIL_GESTURE_KEY, false);
         FileUtils.writeLine(TOUCHSCREEN_EMAIL_NODE, mIsGesture_EML_Enabled ? "1" : "0");
+        mIsGesture_CUS_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_CUSTOM_GESTURE_KEY, false);
+        FileUtils.writeLine(TOUCHSCREEN_W_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_Z_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_V_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_S_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener =
@@ -98,6 +113,12 @@ public class CMActionsSettings {
                    } else if (TOUCHSCREEN_EMAIL_GESTURE_KEY.equals(key)) {
                         mIsGesture_EML_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_EMAIL_GESTURE_KEY, false);
 	                FileUtils.writeLine(TOUCHSCREEN_EMAIL_NODE, mIsGesture_EML_Enabled ? "1" : "0");
+                   } else if (TOUCHSCREEN_CUSTOM_GESTURE_KEY.equals(key)) {
+                        mIsGesture_CUS_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_CUSTOM_GESTURE_KEY, false);
+                        FileUtils.writeLine(TOUCHSCREEN_W_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+                        FileUtils.writeLine(TOUCHSCREEN_Z_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+                        FileUtils.writeLine(TOUCHSCREEN_V_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
+                        FileUtils.writeLine(TOUCHSCREEN_S_NODE, mIsGesture_CUS_Enabled ? "1" : "0");
                     }
                 }
             };

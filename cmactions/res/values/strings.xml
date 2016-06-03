@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2013-2014 The CyanogenMod Project
+     Copyright (C) 2013-2016 The CyanogenMod Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -27,9 +27,22 @@
     • Swipe left for previous track\n
     • Swipe right for next track</string>
     <string name="touchscreen_message_gesture_title">Messaging</string>
-    <string name="touchscreen_message_gesture_summary">Draw an \"m\" to open the messaging app</string>
+    <string name="touchscreen_message_gesture_summary">Draw a \"m\" to open the messaging app</string>
     <string name="touchscreen_email_gesture_title">Email</string>
     <string name="touchscreen_email_gesture_summary">Draw an \"e\" to open the email app</string>
+    <string name="touchscreen_custom_gesture_title">Custom</string>
+    <string name="touchscreen_custom_gesture_summary">Draw \"w\",\"z\",\"v\",\"s\" to open the custom app</string>
+    <string name="touchscreen_w_gesture_title">Custom gesture w</string>
+    <string name="touchscreen_w_gesture_summary">Draw a \"w\" to open the custom app</string>
+    <string name="touchscreen_z_gesture_title">Custom gesture z</string>
+    <string name="touchscreen_z_gesture_summary">Draw a \"z\" to open the custom app</string>
+    <string name="touchscreen_v_gesture_title">Custom gesture v</string>
+    <string name="touchscreen_v_gesture_summary">Draw a \"v\" to open the custom app</string>
+    <string name="touchscreen_s_gesture_title">Custom gesture s</string>
+    <string name="touchscreen_s_gesture_summary">Draw a \"s\" to open the custom app</string>
+    <string name="touchscreen_action_title">Launch action</string>
+    <string name="touchscreen_action_default">None</string>
+    <string name="touchscreen_action_shortcut">Custom shortcut</string>
     <string name="ambient_display_title">Ambient display</string>
     <string name="ambient_display_enable_title">Ambient display</string>
     <string name="ambient_display_enable_summary">Wake screen when you receive notifications</string>
