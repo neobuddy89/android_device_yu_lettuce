@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013-2016 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Gesture shortcuts -->
+    <string name="touchscreen_gesture_title">Touchscreen gestures</string>
+    <string name="touchscreen_camera_gesture_title">Camera</string>
+    <string name="touchscreen_camera_gesture_summary">Draw a \'c\' to activate camera</string>
+    <string name="touchscreen_flashlight_gesture_title">Flashlight</string>
+    <string name="touchscreen_flashlight_gesture_summary">Draw a circle to toggle flashlight</string>
+    <string name="touchscreen_music_gesture_title">Music</string>
+    <string name="touchscreen_music_gesture_summary">Use gestures to control music playback \n
+    • Swipe down to play/pause\n
+    • Swipe left for previous track\n
+    • Swipe right for next track</string>
+    <string name="touchscreen_message_gesture_title">Messaging</string>
+    <string name="touchscreen_message_gesture_summary">Draw a \"m\" to open the messaging app</string>
+    <string name="touchscreen_email_gesture_title">Email</string>
+    <string name="touchscreen_email_gesture_summary">Draw an \"e\" to open the email app</string>
+    <string name="touchscreen_custom_gesture_title">Custom</string>
+    <string name="touchscreen_custom_gesture_summary">Draw \"w\",\"z\",\"v\",\"s\" to open the custom app</string>
+    <string name="touchscreen_w_gesture_title">Custom gesture w</string>
+    <string name="touchscreen_w_gesture_summary">Draw a \"w\" to open the custom app</string>
+    <string name="touchscreen_z_gesture_title">Custom gesture z</string>
+    <string name="touchscreen_z_gesture_summary">Draw a \"z\" to open the custom app</string>
+    <string name="touchscreen_v_gesture_title">Custom gesture v</string>
+    <string name="touchscreen_v_gesture_summary">Draw a \"v\" to open the custom app</string>
+    <string name="touchscreen_s_gesture_title">Custom gesture s</string>
+    <string name="touchscreen_s_gesture_summary">Draw a \"s\" to open the custom app</string>
+    <string name="touchscreen_action_title">Launch action</string>
+    <string name="touchscreen_action_default">None</string>
+    <string name="touchscreen_action_shortcut">Custom shortcut</string>
+    <string name="ambient_display_title">Ambient display</string>
+    <string name="ambient_display_enable_title">Ambient display</string>
+    <string name="ambient_display_enable_summary">Wake screen when you receive notifications</string>
+    <string name="hand_wave_gesture_title">Hand wave</string>
+    <string name="hand_wave_gesture_summary">Pulse notifications on hand wave</string>
+    <string name="pocket_gesture_title">Pocket</string>
+    <string name="pocket_gesture_summary">Pulse notifications on removal from pocket</string>
+    <string name="proximity_wake_title">Proximity wake</string>
+    <string name="proximity_wake_enable_title">Proximity wake</string>
+    <string name="proximity_wake_enable_summary">Wake device on hand wave</string>
+</resources>
