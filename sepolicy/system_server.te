@@ -1,5 +1,8 @@
-allow system_server touchpanel_sysfs:file rw_file_perms;
-allow system_server touchpanel_sysfs:dir { search };
+allow system_app touchpanel_sysfs:file rw_file_perms;
+allow system_app touchpanel_sysfs:dir { search read write ioctl };
 
-# for CMHardwareService access to VibratorHW
-allow system_server vibeamp_sysfs:file rw_file_perms;
+allow system_server touchpanel_sysfs:file rw_file_perms;
+allow system_server touchpanel_sysfs:dir { search read write ioctl };
+
+allow untrusted_app touchpanel_sysfs:file rw_file_perms;
+allow untrusted_app touchpanel_sysfs:dir { search read write ioctl };
