@@ -354,21 +354,37 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     }
 
      private class InitListTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            List<String> listPackageNames = getPackageNames();
-            listPackageNames.add(0, "default");
-            listPackageNames.add(1, "shortcut");
-            final CharSequence[] packageNames =
-                    listPackageNames.toArray(new CharSequence[listPackageNames.size()]);
-            final CharSequence[] hrblPackageNames = new CharSequence[listPackageNames.size()];
+         private int defaultValuesCount = 2;
 
-            for (int i = 0; i < listPackageNames.size(); i++) {
-                hrblPackageNames[i] = getAppnameFromPackagename(listPackageNames.get(i));
-            }
+         @Override
+         protected Void doInBackground(Void... voids) {
+             TreeMap<String, String> treemap = new TreeMap<String, String>(new Comparator<String>() {
+                 public int compare(String o1, String o2) {
+                     return o1.toLowerCase().compareTo(o2.toLowerCase());
+                 }
+             });
 
-            hrblPackageNames[0] = getResources().getString(R.string.touchscreen_action_default);
-            hrblPackageNames[1] = getResources().getString(R.string.touchscreen_action_shortcut);
+             List<String> listPackageNames = getPackageNames();
+             for (String name : listPackageNames){
+                 treemap.put(getAppnameFromPackagename(name), name);
+             }
+
+             final CharSequence[] packageNames = new CharSequence[listPackageNames.size() + defaultValuesCount];
+             final CharSequence[] hrblPackageNames = new CharSequence[listPackageNames.size() + defaultValuesCount];
+
+             hrblPackageNames[0] = getResources().getString(R.string.touchscreen_action_default);
+             hrblPackageNames[1] = getResources().getString(R.string.touchscreen_action_shortcut);
+             packageNames[0] = "default";
+             packageNames[1] = "shortcut";
+             int counter = defaultValuesCount;
+             Iterator ittwo = treemap.entrySet().iterator();
+             while (ittwo.hasNext()) {
+                 Map.Entry pairs = (Map.Entry)ittwo.next();
+                 hrblPackageNames[counter] = (CharSequence)pairs.getKey();
+                 packageNames[counter] = (CharSequence)pairs.getValue();
+                 ittwo.remove();
+                 counter++;
+             }
 
             mWIntent.setEntries(hrblPackageNames);
             mWIntent.setEntryValues(packageNames);
