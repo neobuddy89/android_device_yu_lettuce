@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2016 The CyanogenMod Project
+ * Copyright (C) 2016 The CyanogenMod Project
+ *           (C) 2017 The LineageOS Project
+ *           (C) 2017 crDroid Android Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,9 +120,9 @@ public class DozeService extends Service {
     public void onCreate() {
         if (DEBUG) Log.d(TAG, "DozeService Started");
         mContext = this;
-        mPowerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mSensor = new ProximitySensor(mContext);
-        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DozeWakeLock");
+        mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CMActionsWakeLock");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         loadPreferences(sharedPrefs);
         sharedPrefs.registerOnSharedPreferenceChangeListener(mPrefListener);

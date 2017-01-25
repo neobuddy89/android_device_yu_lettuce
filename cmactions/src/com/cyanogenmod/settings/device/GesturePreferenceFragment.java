@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2016 The CyanogenMod Project
+ *           (C) 2017 The LineageOS Project
+ *           (C) 2017 crDroid Android Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +18,8 @@
 
 package com.cyanogenmod.settings.device;
 
-import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -25,15 +27,13 @@ import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v14.preference.PreferenceFragment;
+import android.support.v14.preference.SwitchPreference;
 import android.provider.Settings;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -41,9 +41,7 @@ import java.util.Set;
 
 import cyanogenmod.providers.CMSettings;
 
-import org.cyanogenmod.internal.util.ScreenType;
-
-public class TouchscreenGestureSettings extends PreferenceActivity {
+public class GesturePreferenceFragment extends PreferenceFragment {
 
     private static final String KEY_AMBIENT_DISPLAY_ENABLE = "ambient_display_enable";
     private static final String KEY_HAND_WAVE = "gesture_hand_wave";
@@ -74,11 +72,10 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     private String preferenceKeyLastChangedShortcut;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.touchscreen_panel);
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
         boolean dozeEnabled = isDozeEnabled();
         boolean custEnabled;
@@ -100,6 +97,8 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         mProximityWakePreference.setOnPreferenceChangeListener(mProximityListener);
 
         mHapticFeedback = (SwitchPreference) findPreference(KEY_HAPTIC_FEEDBACK);
+        mHapticFeedback.setChecked(CMSettings.System.getInt(getActivity().getContentResolver(),
+                CMSettings.System.TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK, 1) != 0);
         mHapticFeedback.setOnPreferenceChangeListener(mHapticFeedbackListener);
 
         mCustomPreference = (SwitchPreference) findPreference(KEY_CUSTOM_GESTURE);
@@ -123,18 +122,15 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         mSIntent.setEnabled(custEnabled);
 
         new InitListTask().execute();
-
-        final ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private boolean enableDoze(boolean enable) {
-        return Settings.Secure.putInt(getContentResolver(),
+        return Settings.Secure.putInt(getActivity().getContentResolver(),
                 Settings.Secure.DOZE_ENABLED, enable ? 1 : 0);
     }
 
     private boolean isDozeEnabled() {
-        return Settings.Secure.getInt(getContentResolver(),
+        return Settings.Secure.getInt(getActivity().getContentResolver(),
                 Settings.Secure.DOZE_ENABLED, 0) != 0;
     }
 
@@ -173,7 +169,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             if (preference.getKey().equals(KEY_HAPTIC_FEEDBACK)) {
                 final boolean value = (Boolean) newValue;
-                CMSettings.System.putInt(getContentResolver(),
+                CMSettings.System.putInt(getActivity().getContentResolver(),
                         CMSettings.System.TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK, value ? 1 : 0);
                 return true;
             }
@@ -208,7 +204,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
                 if (value.equals("shortcut")) {
                     createShortcutPicked(KEY_W_INTENT);
                 } else {
-                    Settings.System.putString(getContentResolver(), KEY_W_INTENT, value);
+                    Settings.System.putString(getActivity().getContentResolver(), KEY_W_INTENT, value);
                     reloadSummary();
                 }
                 return true;
@@ -227,7 +223,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
                 if (value.equals("shortcut")) {
                     createShortcutPicked(KEY_Z_INTENT);
                 } else {
-                    Settings.System.putString(getContentResolver(), KEY_Z_INTENT, value);
+                    Settings.System.putString(getActivity().getContentResolver(), KEY_Z_INTENT, value);
                     reloadSummary();
                 }
                 return true;
@@ -246,7 +242,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
                 if (value.equals("shortcut")) {
                     createShortcutPicked(KEY_V_INTENT);
                 } else {
-                    Settings.System.putString(getContentResolver(), KEY_V_INTENT, value);
+                    Settings.System.putString(getActivity().getContentResolver(), KEY_V_INTENT, value);
                     reloadSummary();
                 }
                 return true;
@@ -265,7 +261,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
                 if (value.equals("shortcut")) {
                     createShortcutPicked(KEY_S_INTENT);
                 } else {
-                    Settings.System.putString(getContentResolver(), KEY_S_INTENT, value);
+                    Settings.System.putString(getActivity().getContentResolver(), KEY_S_INTENT, value);
                     reloadSummary();
                 }
                 return true;
@@ -286,13 +282,13 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
                         Intent.EXTRA_SHORTCUT_NAME));
                 String uri = intent.toUri(Intent.URI_INTENT_SCHEME);
                 if (preferenceKeyLastChangedShortcut != null) {
-                    Settings.System.putString(getContentResolver(),
+                    Settings.System.putString(getActivity().getContentResolver(),
                             preferenceKeyLastChangedShortcut, uri);
                     reloadSummary();
                 }
             }
         } else {
-            Settings.System.putString(getContentResolver(),
+            Settings.System.putString(getActivity().getContentResolver(),
                     preferenceKeyLastChangedShortcut, "default");
             reloadSummary();
         }
@@ -308,7 +304,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     }
 
     private List<String> getPackageNames() {
-        PackageManager packageManager = getApplicationContext().getPackageManager();
+        PackageManager packageManager = getActivity().getApplicationContext().getPackageManager();
         List<String> packageNameList = new ArrayList<String>();
         List<PackageInfo> packs = packageManager.getInstalledPackages(0);
 
@@ -326,7 +322,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         if (packagename == null || "".equals(packagename)) {
             return getResources().getString(R.string.touchscreen_action_default);
         }
-        final PackageManager pm = getApplicationContext().getPackageManager();
+        final PackageManager pm = getActivity().getApplicationContext().getPackageManager();
         ApplicationInfo ai;
         try {
             ai = pm.getApplicationInfo(packagename, 0);
@@ -337,7 +333,7 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     }
 
     private String getSummary(String key) {
-        String summary = Settings.System.getString(getContentResolver(), key);
+        String summary = Settings.System.getString(getActivity().getContentResolver(), key);
         if (summary == null || summary.equals("default")) {
             return getResources().getString(R.string.touchscreen_action_default);
         } else if (summary.startsWith("intent:")) {
@@ -389,27 +385,5 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         protected void onPostExecute(Void voids) {
             reloadSummary();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        mHapticFeedback.setChecked(CMSettings.System.getInt(getContentResolver(),
-                CMSettings.System.TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK, 1) != 0);
-
-        // If running on a phone, remove padding around the listview
-        if (!ScreenType.isTablet(this)) {
-            getListView().setPadding(0, 0, 0, 0);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return false;
     }
 }

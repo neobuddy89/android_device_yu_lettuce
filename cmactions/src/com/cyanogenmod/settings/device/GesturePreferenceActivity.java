@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2016 The CyanogenMod Project
- *           (C) 2017 The LineageOS Project
+ * Copyright (C) 2017 The LineageOS Project
  *           (C) 2017 crDroid Android Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,17 @@
 
 package com.cyanogenmod.settings.device;
 
-interface UpdatedStateNotifier {
-    public void updateState();
+import android.os.Bundle;
+
+import com.android.settingslib.drawer.SettingsDrawerActivity;
+
+public class GesturePreferenceActivity extends SettingsDrawerActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, new GesturePreferenceFragment()).commit();
+    }
+
 }

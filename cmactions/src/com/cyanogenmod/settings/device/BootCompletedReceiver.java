@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2016 The CyanogenMod Project
+ * Copyright (C) 2016 The CyanogenMod Project
+ *           (C) 2017 The LineageOS Project
+ *           (C) 2017 crDroid Android Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +39,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d(TAG, "Booting");
         context.startService(new Intent(context, DozeService.class));
-        enableComponent(context, TouchscreenGestureSettings.class.getName());
+        enableComponent(context, GesturePreferenceActivity.class.getName());
         context.startService(new Intent(context, ServiceWrapper.class));
     }
 
