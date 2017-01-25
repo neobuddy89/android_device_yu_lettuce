@@ -63,8 +63,8 @@ public class KeyHandler implements DeviceKeyHandler {
     private static final int GESTURE_SLIDE_RIGHT_SCANCODE = 251;
     private static final int GESTURE_SLIDE_C_SCANCODE = 252;
     private static final int GESTURE_SLIDE_O_SCANCODE = 253;
-    private static final int GESTURE_SLIDE_M_SCANCODE = 254;
-    private static final int GESTURE_SLIDE_E_SCANCODE = 256;
+    private static final int GESTURE_SLIDE_E_SCANCODE = 255;
+    private static final int GESTURE_SLIDE_M_SCANCODE = 256;
     private static final int GESTURE_SLIDE_W_SCANCODE = 257;
     private static final int GESTURE_SLIDE_Z_SCANCODE = 258;
     private static final int GESTURE_SLIDE_V_SCANCODE = 259;

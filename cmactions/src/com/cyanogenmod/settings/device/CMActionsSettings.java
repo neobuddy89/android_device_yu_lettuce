@@ -43,23 +43,27 @@ public class CMActionsSettings {
 
     // Proc nodes
     public static final String TOUCHSCREEN_CAMERA_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/camera_enable";
-    public static final String TOUCHSCREEN_MUSIC_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/music_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_c_enable";
+    public static final String TOUCHSCREEN_MUSIC_DS_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/down_swipe_enable";
+    public static final String TOUCHSCREEN_MUSIC_LS_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/left_swipe_enable";
+    public static final String TOUCHSCREEN_MUSIC_RS_NODE =
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/right_swipe_enable";
     public static final String TOUCHSCREEN_FLASHLIGHT_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/flashlight_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_o_enable";
     public static final String TOUCHSCREEN_MESSAGE_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/message_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_m_enable";
     public static final String TOUCHSCREEN_EMAIL_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/email_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_e_enable";
     public static final String TOUCHSCREEN_W_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_w_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_w_enable";
     public static final String TOUCHSCREEN_Z_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_z_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_z_enable";
     public static final String TOUCHSCREEN_V_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_v_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_v_enable";
     public static final String TOUCHSCREEN_S_NODE =
-            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/custom_s_enable";
+            "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0040/letter_s_enable";
 
     // Key Masks
     private boolean mIsGesture_CAM_Enabled;
@@ -82,7 +86,9 @@ public class CMActionsSettings {
         mIsGesture_CAM_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_CAMERA_GESTURE_KEY, false);
         FileUtils.writeLine(TOUCHSCREEN_CAMERA_NODE, mIsGesture_CAM_Enabled ? "1" : "0");
         mIsGesture_MUS_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_MUSIC_GESTURE_KEY, false);
-        FileUtils.writeLine(TOUCHSCREEN_MUSIC_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_MUSIC_DS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_MUSIC_LS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+        FileUtils.writeLine(TOUCHSCREEN_MUSIC_RS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
         mIsGesture_FLA_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_FLASHLIGHT_GESTURE_KEY, false);
         FileUtils.writeLine(TOUCHSCREEN_FLASHLIGHT_NODE, mIsGesture_FLA_Enabled ? "1" : "0");
         mIsGesture_MSG_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_MSG_GESTURE_KEY, false);
@@ -105,7 +111,9 @@ public class CMActionsSettings {
 	                FileUtils.writeLine(TOUCHSCREEN_CAMERA_NODE, mIsGesture_CAM_Enabled ? "1" : "0");
                     } else if (TOUCHSCREEN_MUSIC_GESTURE_KEY.equals(key)) {
                         mIsGesture_MUS_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_MUSIC_GESTURE_KEY, false);
- 	                FileUtils.writeLine(TOUCHSCREEN_MUSIC_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+ 	                FileUtils.writeLine(TOUCHSCREEN_MUSIC_DS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+ 	                FileUtils.writeLine(TOUCHSCREEN_MUSIC_LS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
+ 	                FileUtils.writeLine(TOUCHSCREEN_MUSIC_RS_NODE, mIsGesture_MUS_Enabled ? "1" : "0");
                    } else if (TOUCHSCREEN_FLASHLIGHT_GESTURE_KEY.equals(key)) {
                         mIsGesture_FLA_Enabled = sharedPreferences.getBoolean(TOUCHSCREEN_FLASHLIGHT_GESTURE_KEY, false);
 	                FileUtils.writeLine(TOUCHSCREEN_FLASHLIGHT_NODE, mIsGesture_FLA_Enabled ? "1" : "0");
